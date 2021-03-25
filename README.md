@@ -14,6 +14,22 @@ By default it operates in AP-STA mode and will create a private soft AP while co
 6. Ensure a device is connected to the new soft AP and actively pinging it
 7. Get CSI data via TCP, e.g. using `netcat 192.168.1.40 1000`
 
+Note that some channel configurations are not currently parsed, so you will need to enable raw CSI support in config.h.
+
+## Decoding
+Output data is in JSON and actual CSI data is encoded using base64 and can be decoded using
+
+```python
+import base64
+
+def decode(b64):
+    csi = base64.b64decode(b64, validate=True)
+    csi = np.frombuffer(csi, dtype='int8')
+    csi = csi[1::2] + 1j * csi[:-1:2]
+    
+    return csi
+```
+
 ## Sample output
 
 See also sample.json.
