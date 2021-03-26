@@ -1,17 +1,20 @@
+
 # esp32-csi-server
 
 Simple application to collect WiFi channel state information (CSI) from an ESP32 and forward it to a TCP client on another machine. Useful for logging data or remote processing (e.g. activity detection). Uses one or two ESP32s.
 
-By default it operates in AP-STA mode and will create a private soft AP while connected to an external AP. Packets from devices connected via the soft AP will be used for CSI data (getting CSI data from the external AP is also possible). Also included is a mode to connect to the soft AP using a second ESP32, otherwise you can connected via phone, etc. and send pings to the soft AP.
+![diagram](https://user-images.githubusercontent.com/1389709/112679235-4f0a6880-8e42-11eb-82fb-43c5de895c32.png)
+
+By default it operates in AP-STA mode and will create a private soft AP while connected to an external AP. Packets from devices connected via the soft AP will be used for CSI data (getting CSI data from the external AP is also possible). Also included is a mode to connect to the soft AP using a second ESP32, otherwise you can connected via phone, etc. and send pings to the soft AP (any app that generates WiFi traffic will work).
 
 # Usage
 
 1. Install ESP-IDF 4.1+ using [this guide](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/versions.html)
 2. Clone this repo
-3. Configure your ESP32 using the command `esp-idf.py menuconfig`
-4. Configure main/config.h to specify SSID, passwords and other configuration
+3. Configure your ESP32 using the command `idf.py menuconfig`
+4. Configure main/config.h to specify SSID, passwords and other configuration (AP-STA mode, etc.)
 5. Build and flash using, e.g. `idf.py -p /dev/ttyUSB0 flash monitor`
-6. Ensure a device is connected to the new soft AP and actively pinging it
+6. Ensure a device is connected to the new soft AP and actively pinging it (e.g. configure and flash another ESP32 with AP-STA mode disabled)
 7. Get CSI data via TCP, e.g. using `netcat 192.168.1.40 1000`
 
 Note that some channel configurations are not currently parsed, so you will need to enable raw CSI support in config.h.
@@ -28,6 +31,16 @@ def decode(b64):
     csi = csi[1::2] + 1j * csi[:-1:2]
     
     return csi
+```
+
+To get data into a pandas DataFrame, you can using
+
+```python
+import json
+import pandas as pd
+
+js = (json.loads(line) for line in open(filename))
+df = pd.json_normalize(js)
 ```
 
 ## Sample output
@@ -62,7 +75,7 @@ See also sample.json.
   "ant": 0,
   "sig_len": 82,
   "rx_state": 0,
- "lltf": {
+  "lltf": {
     "csi": "AAAAAAAAAAAAAAAAAPcA9vz3//X/+P74/fj9+fz5+/r6+Pj6+fr7+fz7+Pn2+/z7+P35/Pz6+Pz7+/b99vz3+gAA9f/1/PT99f/4/fb+9f73/vb+9v31/fn9+P33/vf99P7z/ff99vz4/Pf79/v5+vf5+vv9+QAAAAAAAAAAAAA=",
     "sc_ind_start": 0
   },
