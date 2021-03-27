@@ -17,7 +17,7 @@ By default it operates in AP-STA mode and will create a private soft AP while co
 6. Ensure a device is connected to the new soft AP and actively pinging it (e.g. configure and flash another ESP32 with AP-STA mode disabled)
 7. Get CSI data via TCP, e.g. using `netcat 192.168.1.40 1000`
 
-Note that some channel configurations are not currently parsed, so you will need to enable raw CSI support in config.h.
+Note that some channel configurations are not currently parsed, so you will need to enable raw CSI support in config.h and [manually parse them](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/wifi.html#wi-fi-channel-state-information).
 
 ## Decoding
 Output data is in JSON and actual CSI data is encoded using base64 and can be decoded using
